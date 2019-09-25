@@ -44,9 +44,9 @@ public class Routes {
     private static String _wsuri = "wss://ws.kite.trade/"+"?access_token=:access_token&api_key=:api_key";
 
     // Initialize all routes,
-       public Routes(){
+    public Routes(){
         routes = new HashMap<String, String>(){{
-           put("parameters", "/parameters");
+            put("parameters", "/parameters");
             put("api.validate", "/session/token");
             put("api.invalidate", "/session/token");
             put("user.margins.segment", "/user/margins/:segment");
@@ -64,6 +64,12 @@ public class Routes {
             put("orders.modify", "/orders/:variety/:order_id");
             put("orders.cancel", "/orders/:variety/:order_id");
             put("orders.trades", "/orders/:order_id/trades");
+
+            put("gtt", "/gtt/triggers");
+            put("gtt.place", "/gtt/triggers");
+            put("gtt.info", "/gtt/triggers/:id");
+            put("gtt.modify", "/gtt/triggers/:id");
+            put("gtt.delete", "/gtt/triggers/:id");
 
             put("portfolio.positions", "/portfolio/positions");
             put("portfolio.holdings", "/portfolio/holdings");
