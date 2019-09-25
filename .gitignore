@@ -1,0 +1,12 @@
+*.idea
+*.iml
+!target/
+target/*
+!/src/test/
+/src/test/*
+!sample/out
+sample/out/*
+out/*
+!sample/.idea/
+sample/.idea/*
+production/*
