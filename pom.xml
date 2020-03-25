@@ -6,7 +6,7 @@
 
     <groupId>com.zerodhatech.kiteconnect</groupId>
     <artifactId>kiteconnect</artifactId>
-    <version>3.1.0</version>
+    <version>3.1.1</version>
     <packaging>jar</packaging>
 
     <distributionManagement>
@@ -116,11 +116,6 @@
             <version>2.3</version>
         </dependency>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.6.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20171018</version>
@@ -128,17 +123,27 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>3.9.1</version>
+            <version>4.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okio</groupId>
             <artifactId>okio</artifactId>
-            <version>1.13.0</version>
+            <version>2.4.3</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>logging-interceptor</artifactId>
-            <version>3.9.1</version>
+            <version>4.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>1.3.70</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.6.2</version>
         </dependency>
     </dependencies>
 
