@@ -38,22 +38,22 @@ public class KiteTicker {
     private OnOrderUpdate orderUpdateListener;
 
     public final int NseCM = 1,
-            NseFO = 2,
-            NseCD = 3,
-            BseCM = 4,
-            BseFO = 5,
-            BseCD = 6,
-            McxFO = 7,
-            McxSX = 8,
-            NseIndices = 9;
+        NseFO = 2,
+        NseCD = 3,
+        BseCM = 4,
+        BseFO = 5,
+        BseCD = 6,
+        McxFO = 7,
+        McxSX = 8,
+        Indices = 9;
 
     private  final String mSubscribe = "subscribe",
-            mUnSubscribe = "unsubscribe",
-            mSetMode = "mode";
+        mUnSubscribe = "unsubscribe",
+        mSetMode = "mode";
 
     public static String modeFull  = "full", // Full quote inludes Quote items, market depth, OI, day high OI, day low OI, last traded time, tick timestamp.
-            modeQuote = "quote", // Quote includes last traded price, last traded quantity, average traded price, volume, total bid(buy quantity), total ask(sell quantity), open, high, low, close.
-            modeLTP   = "ltp"; // Only LTP.
+        modeQuote = "quote", // Quote includes last traded price, last traded quantity, average traded price, volume, total bid(buy quantity), total ask(sell quantity), open, high, low, close.
+        modeLTP   = "ltp"; // Only LTP.
 
     private long lastPongAt = 0;
     private Set<Long> subscribedTokens = new HashSet<>();
@@ -152,9 +152,9 @@ public class KiteTicker {
 
     /** Set error listener.
      * @param listener of type OnError which listens to all the type of errors that may arise in Kite Ticker class. */
-   public void setOnErrorListener(OnError listener){
+    public void setOnErrorListener(OnError listener){
         onErrorListener = listener;
-   }
+    }
 
     /** Set max number of retries for reconnection, for infinite retries set value as -1.
      * @param maxRetries denotes maximum number of retries that the com.zerodhatech.ticker can perform.
@@ -232,7 +232,7 @@ public class KiteTicker {
 
     /** Returns a WebSocketAdapter to listen to ticker related events.*/
     public WebSocketAdapter getWebsocketAdapter(){
-       return new WebSocketAdapter() {
+        return new WebSocketAdapter() {
 
             @Override
             public void onConnected(WebSocket websocket, Map<String, List<String>> headers) {
@@ -457,16 +457,16 @@ public class KiteTicker {
             int dec1 = (segment == NseCD) ? 10000000 : 100;
 
             if(bin.length == 8) {
-                Tick tick = getLtpQuote(bin, x, dec1);
+                Tick tick = getLtpQuote(bin, x, dec1, segment != Indices);
                 ticks.add(tick);
             }else if(bin.length == 28 || bin.length == 32) {
-                Tick tick = getIndeciesData(bin, x);
+                Tick tick = getIndeciesData(bin, x, segment != Indices);
                 ticks.add(tick);
             }else if(bin.length == 44) {
-                Tick tick = getQuoteData(bin, x, dec1);
+                Tick tick = getQuoteData(bin, x, dec1, segment != Indices);
                 ticks.add(tick);
             } else if(bin.length == 184) {
-                Tick tick = getQuoteData(bin, x, dec1);
+                Tick tick = getQuoteData(bin, x, dec1, segment != Indices);
                 tick.setMode(modeFull);
                 ticks.add(getFullData(bin, dec1, tick));
             }
@@ -476,11 +476,11 @@ public class KiteTicker {
 
     /** Parses NSE indices data.
      * @return Tick is the parsed index data. */
-    private Tick getIndeciesData(byte[] bin, int x){
+    private Tick getIndeciesData(byte[] bin, int x, boolean tradable){
         int dec = 100;
         Tick tick = new Tick();
-        tick.setMode(modeFull);
-        tick.setTradable(false);
+        tick.setMode(modeQuote);
+        tick.setTradable(tradable);
         tick.setInstrumentToken(x);
         tick.setLastTradedPrice(convertToDouble(getBytes(bin, 4, 8)) / dec);
         tick.setHighPrice(convertToDouble(getBytes(bin, 8, 12)) / dec);
@@ -489,6 +489,7 @@ public class KiteTicker {
         tick.setClosePrice(convertToDouble(getBytes(bin, 20, 24)) / dec);
         tick.setNetPriceChangeFromClosingPrice(convertToDouble(getBytes(bin, 24, 28)) / dec);
         if(bin.length > 28) {
+            tick.setMode(modeFull);
             long tickTimeStamp = convertToLong(getBytes(bin, 28, 32)) * 1000;
             if(isValidDate(tickTimeStamp)) {
                 tick.setTickTimestamp(new Date(tickTimeStamp));
@@ -500,20 +501,21 @@ public class KiteTicker {
     }
 
     /** Parses LTP data.*/
-    private Tick getLtpQuote(byte[] bin, int x, int dec1){
+    private Tick getLtpQuote(byte[] bin, int x, int dec1, boolean tradable){
         Tick tick1 = new Tick();
         tick1.setMode(modeLTP);
-        tick1.setTradable(true);
+        tick1.setTradable(tradable);
         tick1.setInstrumentToken(x);
         tick1.setLastTradedPrice(convertToDouble(getBytes(bin, 4, 8)) / dec1);
         return tick1;
     }
 
     /** Get quote data (last traded price, last traded quantity, average traded price, volume, total bid(buy quantity), total ask(sell quantity), open, high, low, close.) */
-    private Tick getQuoteData(byte[] bin, int x, int dec1){
+    private Tick getQuoteData(byte[] bin, int x, int dec1, boolean tradable){
         Tick tick2 = new Tick();
         tick2.setMode(modeQuote);
         tick2.setInstrumentToken(x);
+        tick2.setTradable(tradable);
         double lastTradedPrice = convertToDouble(getBytes(bin, 4, 8)) / dec1;
         tick2.setLastTradedPrice(lastTradedPrice);
         tick2.setLastTradedQuantity(convertToDouble(getBytes(bin, 8, 12)));
@@ -640,7 +642,7 @@ public class KiteTicker {
             if(onErrorListener != null) {
                 onErrorListener.onError(e);
             }
-                return;
+            return;
         }
         ws.addListener(getWebsocketAdapter());
         connect();
@@ -671,8 +673,8 @@ public class KiteTicker {
                 count = 0;
                 nextReconnectInterval = 0;
                 onConnectedListener = onUsersConnectedListener;
-                }
-            });
+            }
+        });
     }
 
     private boolean isValidDate(long date) {
@@ -717,7 +719,7 @@ public class KiteTicker {
         }
     }
 
-    public Order getOrder(JSONObject data) throws JSONException {
+    public Order getOrder(JSONObject data) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
 
