@@ -21,6 +21,7 @@ public class Constants {
     public static final String VARIETY_BO = "bo";
     public static final String VARIETY_CO = "co";
     public static final String VARIETY_AMO = "amo";
+    public static final String VARIETY_ICEBERG = "iceberg";
 
     /** Transaction types. */
     public static final String TRANSACTION_TYPE_BUY = "BUY";
@@ -33,6 +34,7 @@ public class Constants {
     /** Validity types. */
     public static final String VALIDITY_DAY = "DAY";
     public static final String VALIDITY_IOC = "IOC";
+    public static final String VALIDITY_TTL = "TTL";
 
     /** Exchanges. */
     public static final String EXCHANGE_NSE = "NSE";
@@ -67,7 +69,7 @@ public class Constants {
     public static final String SINGLE = "single";
 
     /*These are commonly used order statuses but there are many other order statuses.
-    * Some of the statuses are only intermediate. */
+     * Some of the statuses are only intermediate. */
     public static final String ORDER_CANCELLED = "CANCELLED";
     public static final String ORDER_REJECTED = "REJECTED";
     public static final String ORDER_COMPLETE = "COMPLETE";

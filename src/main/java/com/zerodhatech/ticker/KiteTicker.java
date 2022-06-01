@@ -454,7 +454,7 @@ public class KiteTicker {
             //int token = x >> 8;
             int segment = x & 0xff;
 
-            int dec1 = (segment == NseCD) ? 10000000 : 100;
+            int dec1 = (segment == NseCD) ? 10000000 : (segment == BseCD)? 10000 : 100;
 
             if(bin.length == 8) {
                 Tick tick = getLtpQuote(bin, x, dec1, segment != Indices);
@@ -482,12 +482,16 @@ public class KiteTicker {
         tick.setMode(modeQuote);
         tick.setTradable(tradable);
         tick.setInstrumentToken(x);
-        tick.setLastTradedPrice(convertToDouble(getBytes(bin, 4, 8)) / dec);
+        double lastTradedPrice = convertToDouble(getBytes(bin, 4, 8)) / dec;
+        tick.setLastTradedPrice(lastTradedPrice);
         tick.setHighPrice(convertToDouble(getBytes(bin, 8, 12)) / dec);
         tick.setLowPrice(convertToDouble(getBytes(bin, 12, 16)) / dec);
         tick.setOpenPrice(convertToDouble(getBytes(bin, 16, 20)) / dec);
-        tick.setClosePrice(convertToDouble(getBytes(bin, 20, 24)) / dec);
-        tick.setNetPriceChangeFromClosingPrice(convertToDouble(getBytes(bin, 24, 28)) / dec);
+        double closePrice = convertToDouble(getBytes(bin, 20, 24)) / dec;
+        tick.setClosePrice(closePrice);
+        // here exchange is sending absolute value, hence we change that to %change
+        //tick.setNetPriceChangeFromClosingPrice(convertToDouble(getBytes(bin, 24, 28)) / dec);
+        setChangeForTick(tick, lastTradedPrice, closePrice);
         if(bin.length > 28) {
             tick.setMode(modeFull);
             long tickTimeStamp = convertToLong(getBytes(bin, 28, 32)) * 1000;
@@ -520,7 +524,7 @@ public class KiteTicker {
         tick2.setLastTradedPrice(lastTradedPrice);
         tick2.setLastTradedQuantity(convertToDouble(getBytes(bin, 8, 12)));
         tick2.setAverageTradePrice(convertToDouble(getBytes(bin, 12, 16)) / dec1);
-        tick2.setVolumeTradedToday(convertToDouble(getBytes(bin, 16, 20)));
+        tick2.setVolumeTradedToday(convertToLong(getBytes(bin, 16, 20)));
         tick2.setTotalBuyQuantity(convertToDouble(getBytes(bin, 20, 24)));
         tick2.setTotalSellQuantity(convertToDouble(getBytes(bin, 24, 28)));
         tick2.setOpenPrice(convertToDouble(getBytes(bin, 28, 32)) / dec1);

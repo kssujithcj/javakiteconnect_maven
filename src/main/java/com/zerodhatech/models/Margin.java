@@ -37,6 +37,8 @@ public class Margin {
         @SerializedName("collateral")
         public String collateral;
 
+        @SerializedName("live_balance")
+        public String liveBalance;
     }
 
     /**
