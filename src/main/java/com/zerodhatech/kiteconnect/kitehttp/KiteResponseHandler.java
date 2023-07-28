@@ -21,7 +21,7 @@ public class KiteResponseHandler {
             }
             return jsonObject;
         } else {
-            throw new DataException("Unexpected content type received from server: "+ response.header("Content-Type")+" "+response.body().string(), 502);
+            throw new DataException("Unexpected content type received from server: "+ response.header("Content-Type")+" "+body, 502);
         }
     }
 
@@ -29,9 +29,9 @@ public class KiteResponseHandler {
         if (response.header("Content-Type").contains("csv")) {
             return body;
         } else if(response.header("Content-Type").contains("json")){
-            throw dealWithException(new JSONObject(response.body().string()), response.code());
+            throw dealWithException(new JSONObject(body), response.code());
         } else {
-            throw new DataException("Unexpected content type received from server: "+ response.header("Content-Type")+" "+response.body().string(), 502);
+            throw new DataException("Unexpected content type received from server: "+ response.header("Content-Type")+" "+body, 502);
         }
     }
 
