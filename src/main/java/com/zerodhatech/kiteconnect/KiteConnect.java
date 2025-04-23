@@ -385,11 +385,78 @@ public class KiteConnect {
         if(variety.equals(Constants.VARIETY_AUCTION)){
             params.put("auction_number", orderParams.auctionNumber);
         }
+        params.put("market_protection", orderParams.marketProtection);
 
         JSONObject jsonObject = kiteRequestHandler.postRequest(url, params, apiKey, accessToken);
         Order order =  new Order();
         order.orderId = jsonObject.getJSONObject("data").getString("order_id");
         return order;
+    }
+
+    /**
+     * Place auto slice order.
+     * @param orderParams is Order params.
+     * @param variety variety="regular". Order variety can be bo, co, amo, regular.
+     * @return Order contains only orderId.
+     * @throws KiteException is thrown for all Kite trade related errors.
+     * @throws JSONException is thrown when there is exception while parsing response.
+     * @throws IOException is thrown when there is connection error.
+     * If the parent order placement fails then users will see error message in
+     * the KiteException thrown from global response handler. But if subsequent
+     * order placement fails then error message is inside the AutoSliceOrderResponse model
+     * sample response is
+     * {
+     *     "status": "success",
+     *     "data": [
+     *         {
+     *             "order_id": "1914227164488687616"
+     *         },
+     *         {
+     *             "error": {
+     *                 "code": 400,
+     *                 "error_type": "MarginException",
+     *                 "message": "Insufficient funds. Required margin is 228365.92 but available margin is 228358.50.",
+     *                 "data": null
+     *             }
+     *         },
+     *         {
+     *             "order_id": "1914227164681625600"
+     *         }
+     *     ]
+     * }
+     * */
+    public List<BulkOrderResponse> placeAutoSliceOrder(OrderParams orderParams, String variety) throws KiteException, JSONException, IOException {
+        String url = routes.get("orders.place").replace(":variety", variety);
+        Map<String, Object> params = new HashMap<>();
+
+        if(orderParams.exchange != null) params.put("exchange", orderParams.exchange);
+        if(orderParams.tradingsymbol != null) params.put("tradingsymbol", orderParams.tradingsymbol);
+        if(orderParams.transactionType != null) params.put("transaction_type", orderParams.transactionType);
+        if(orderParams.quantity != null) params.put("quantity", orderParams.quantity);
+        if(orderParams.price != null) params.put("price", orderParams.price);
+        if(orderParams.product != null) params.put("product", orderParams.product);
+        if(orderParams.orderType != null) params.put("order_type", orderParams.orderType);
+        if(orderParams.validity != null) params.put("validity", orderParams.validity);
+        if(orderParams.disclosedQuantity != null) params.put("disclosed_quantity", orderParams.disclosedQuantity);
+        if(orderParams.triggerPrice != null) params.put("trigger_price", orderParams.triggerPrice);
+        if(orderParams.squareoff != null) params.put("squareoff", orderParams.squareoff);
+        if(orderParams.stoploss != null) params.put("stoploss", orderParams.stoploss);
+        if(orderParams.trailingStoploss != null) params.put("trailing_stoploss", orderParams.trailingStoploss);
+        if(orderParams.tag != null) params.put("tag", orderParams.tag);
+        if(orderParams.validity != null && orderParams.validity.equals(Constants.VALIDITY_TTL))
+            params.put("validity_ttl",orderParams.validityTTL);
+        if(variety.equals(Constants.VARIETY_ICEBERG)){
+            params.put("iceberg_legs", orderParams.icebergLegs);
+            params.put("iceberg_quantity", orderParams.icebergQuantity);
+        }
+        if(variety.equals(Constants.VARIETY_AUCTION)){
+            params.put("auction_number", orderParams.auctionNumber);
+        }
+        params.put("autoslice", true);
+        params.put("market_protection", orderParams.marketProtection);
+
+        JSONObject response = kiteRequestHandler.postRequest(url, params, apiKey, accessToken);
+        return Arrays.asList(gson.fromJson(String.valueOf(response.get("data")), BulkOrderResponse[].class));
     }
 
     /**
