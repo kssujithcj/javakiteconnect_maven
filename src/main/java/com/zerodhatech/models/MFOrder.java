@@ -29,7 +29,7 @@ public class MFOrder {
     @SerializedName("exchange_order_id")
     public Date exchangeOrderId;
     @SerializedName("exchange_timestamp")
-    public Date exchangeTimestamp;
+    public String exchangeTimestamp;
     @SerializedName("fund")
     public String fund;
     @SerializedName("variety")
