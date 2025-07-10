@@ -48,4 +48,6 @@ public class Holding {
     public  double dayChange;
     @SerializedName("day_change_percentage")
     public  double dayChangePercentage;
+    @SerializedName("mtf")
+    public  MTFHolding mtf;
 }
