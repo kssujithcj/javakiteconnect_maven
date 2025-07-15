@@ -10,3 +10,5 @@ out/*
 !sample/.idea/
 sample/.idea/*
 production/*
+release/*
+pom.xml.asc
